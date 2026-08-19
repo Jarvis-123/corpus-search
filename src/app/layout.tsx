@@ -2,7 +2,7 @@ import "@/app/globals.css";
 import type { Metadata } from "next";
 import { site } from "@/lib/site";
 
-const ogImageUrl = `${site.siteUrl}/linkedin-share.jpg`;
+const ogImageUrl = `${site.siteUrl}${site.ogImagePath}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.siteUrl),
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: ogImageUrl,
-        width: 1200,
-        height: 627,
+        width: site.ogImageWidth,
+        height: site.ogImageHeight,
         alt: site.title,
         type: "image/jpeg",
       },
