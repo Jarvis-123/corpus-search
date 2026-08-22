@@ -10,6 +10,8 @@ const EXAMPLES = [
   "onboarding checklist",
 ];
 
+const REPO_URL = "https://github.com/Jarvis-123/corpus-search";
+
 export function CorpusSearchDemo() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -118,6 +120,17 @@ export function CorpusSearchDemo() {
           </ul>
         </section>
       ) : null}
+
+      <footer className="border-t border-[var(--border)] pt-6 text-sm text-[var(--muted)]">
+        <a
+          href={REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded text-[var(--fg)] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+        >
+          View source on GitHub
+        </a>
+      </footer>
     </div>
   );
 }
