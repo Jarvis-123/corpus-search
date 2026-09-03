@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { classifySearchIntent } from "@/lib/intent";
+import { classifyIntent } from "query-intent-router";
 import { searchCorpus } from "@/lib/search";
 
 export async function POST(request: Request) {
@@ -10,7 +10,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Query is required." }, { status: 400 });
     }
 
-    const intent = classifySearchIntent(query);
+    const intent = classifyIntent(query);
     const hits = searchCorpus(query);
 
     return NextResponse.json({ query, intent, hits });

@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { INTENT_CATEGORY_BOOST, classifySearchIntent } from "@/lib/intent";
+import { type DocumentIntent, classifyIntent } from "query-intent-router";
 import type { CorpusDoc, SearchHit } from "@/lib/types";
 
 const CORPUS_DIR = join(process.cwd(), "corpus", "sample");
@@ -64,9 +64,18 @@ export function loadCorpus(): CorpusDoc[] {
   return cachedDocs;
 }
 
+/** Corpus categories each intent favours — specific to this corpus, not the classifier. */
+export const INTENT_CATEGORY_BOOST: Partial<Record<DocumentIntent, string[]>> = {
+  procedure: ["procedure", "workflow"],
+  template: ["template", "comms"],
+  policy: ["policy", "compliance"],
+  metric: ["reporting", "analytics"],
+  contact: ["directory", "escalation"],
+};
+
 export function searchCorpus(query: string, limit = 8): SearchHit[] {
   const trimmed = query.trim();
-  const intent = classifySearchIntent(trimmed);
+  const intent = classifyIntent(trimmed);
   const docs = loadCorpus();
   const qTokens = tokenize(trimmed);
   const boostCategories = INTENT_CATEGORY_BOOST[intent] ?? [];
@@ -79,7 +88,9 @@ export function searchCorpus(query: string, limit = 8): SearchHit[] {
         if (haystack.includes(token)) score += 1;
         if (doc.title.toLowerCase().includes(token)) score += 2;
       }
-      if (boostCategories.includes(doc.category)) score += 1;
+      // Breaks ties between documents the query already matched; it must not
+      // manufacture a match for a query that hit nothing.
+      if (score > 0 && boostCategories.includes(doc.category)) score += 1;
       return { doc, score, snippet: snippetFor(trimmed, doc.body) };
     })
     .filter((hit) => hit.score > 0)
